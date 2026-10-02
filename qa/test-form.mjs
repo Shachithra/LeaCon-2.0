@@ -18,6 +18,30 @@ await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduc
 page.on("console", (m) => { if (m.type() === "error") console.log("PAGE-ERROR:", m.text()); });
 page.on("pageerror", (e) => console.log("PAGE-EXCEPTION:", e.message));
 
+// Never hit the live Apps Script endpoint: mock the response and inspect the
+// outgoing payload so QA can verify the contract without writing a Sheet row.
+const SCRIPT_URL = "https://script.google.com/a/macros/aiesec.net/s/";
+let postedPayload = null;
+await page.setRequestInterception(true);
+page.on("request", (req) => {
+  if (req.url().startsWith(SCRIPT_URL)) {
+    postedPayload = Object.fromEntries(new URLSearchParams(req.postData() || ""));
+    console.log("payload-keys:", JSON.stringify(Object.keys(postedPayload).sort()));
+    req.respond({
+      status: 200,
+      contentType: "application/json",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({
+        success: true,
+        applicationId: "LEACON-TEST-000000-000000",
+        message: "Application submitted successfully.",
+      }),
+    });
+  } else {
+    req.continue();
+  }
+});
+
 const log = (...a) => console.log(...a);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const currentStep = () =>
@@ -51,8 +75,8 @@ log("empty-next:", JSON.stringify(errState));
 log("step after empty next:", await currentStep());
 
 // 3. Fill step 1
-await page.type("#full-name", "Test Applicant");
-await page.type("#contact", "+94771234567");
+await page.type("#fullName", "Test Applicant");
+await page.type("#contactNumber", "+94771234567");
 await page.type("#email", "test@example.com");
 await page.evaluate(() => {
   document.querySelector('input[name="frontOffice"]').click();
@@ -125,18 +149,35 @@ const consentState = await page.evaluate(() => {
   return boxes.map((b) => ({ id: b.id, checked: b.checked }));
 });
 log("consent:", JSON.stringify(consentState));
-await page.click("#btn-submit");
+await page.click("#submitApplication");
 await wait(7000);
 const after = await page.evaluate(() => {
-  const success = document.querySelector(".success");
-  const alerts = Array.from(document.querySelectorAll("[role='alert'], .form__error, .form-status")).map((e) => e.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
+  const success = document.getElementById("successMessage");
+  const alerts = Array.from(document.querySelectorAll("[role='alert'], .form__error, .form-status"))
+    .filter((e) => (e.checkVisibility ? e.checkVisibility() : true))
+    .map((e) => e.textContent.replace(/\s+/g, " ").trim()).filter(Boolean);
   return {
     successShown: success ? !success.hidden : false,
+    applicationId: document.getElementById("success-ref")?.textContent.trim(),
     alerts: alerts.slice(0, 4),
-    submittingBtn: document.getElementById("btn-submit")?.textContent.trim(),
+    submittingBtn: document.getElementById("submitApplication")?.textContent.trim(),
   };
 });
 log("after-submit:", JSON.stringify(after));
+log("sent-to-endpoint:", JSON.stringify({
+  fullName: postedPayload?.fullName,
+  email: postedPayload?.email,
+  contactNumber: postedPayload?.contactNumber,
+  frontOffice: postedPayload?.frontOffice,
+  backOffice: postedPayload?.backOffice,
+  firstPreference: postedPayload?.firstPreference,
+  secondPreference: postedPayload?.secondPreference,
+  policiesAccepted: postedPayload?.policiesAccepted,
+  website: postedPayload?.website,
+  photoName: postedPayload?.photoName,
+  photoType: postedPayload?.photoType,
+  photoBase64Bytes: postedPayload?.photoBase64?.length ?? 0,
+}));
 await page.screenshot({ path: OUT + "form-after-submit.png" });
 
 await browser.close();

@@ -1,58 +1,59 @@
 /**
  * LeaCon II — Application endpoint (Google Apps Script Web App)
  * ---------------------------------------------------------------
- * HTML form → JavaScript → this Web App → Google Sheet (+ Drive photo)
+ * HTML form -> JavaScript (js/form.js) -> this Web App -> Google Sheet
+ *                                                     -> Google Drive photo
  *
  * DEPLOYMENT
- * 1. Create a Google Sheet named "LeaCon II OC Applications".
- * 2. Extensions → Apps Script → paste this file as Code.gs.
- * 3. Project Settings → check "Show appsscript.json manifest file"
+ * 1. Open the LeaCon II applications Google Sheet.
+ * 2. Extensions -> Apps Script -> paste this file as Code.gs.
+ * 3. Project Settings -> check "Show appsscript.json manifest file"
  *    and replace it with appsscript.json from this folder.
- * 4. Deploy → New deployment → type "Web app":
+ * 4. Deploy -> Manage deployments -> New deployment -> type "Web app":
  *      - Execute as: Me
  *      - Who has access: Anyone
- * 5. Copy the /exec URL into js/form.js → APPS_SCRIPT_ENDPOINT.
+ * 5. The frontend already points at the deployed /exec URL in js/form.js.
+ *
+ * REQUEST / RESPONSE CONTRACT (keep aligned with js/form.js)
+ * - Reads e.parameter, so the frontend sends URLSearchParams - never JSON.
+ * - Success: { success: true,  applicationId, message }
+ * - Failure: { success: false, message }
  *
  * SECURITY NOTES
  * - Never put API keys or secrets in the frontend. This endpoint relies
- *   on server-side validation, a honeypot, a minimum fill-time check and
- *   a simple per-email rate limit.
- * - Validate everything again here — never trust the frontend.
+ *   on server-side validation, a honeypot field and a per-email rate limit.
+ * - Validate everything again here - never trust the frontend.
  */
 
-var CONFIG = {
-  // "" means: use the spreadsheet this script is bound to.
-  SPREADSHEET_ID: "",
-  SHEET_NAME: "Applications",
-  // Drive folder that stores uploaded professional photos.
-  // "" means photos are NOT uploaded and the row is flagged instead.
-  PHOTO_FOLDER_ID: "",
-  SHEET_HEADERS: [
-    "Timestamp",
-    "Email",
-    "Full Name",
-    "Contact Number",
-    "Front Office Function",
-    "Back Office Function",
-    "Inspiration",
-    "Relevant Skills",
-    "Leadership Experience",
-    "Challenge Handling",
-    "Definition of Successful Event",
-    "Three Strengths",
-    "Three Weaknesses",
-    "First Preferred Role",
-    "Second Preferred Role",
-    "Professional Photo URL",
-    "Policies Accepted",
-    "Submission ID"
-  ],
-  MIN_FILL_MS: 3000,
-  RATE_LIMIT_PER_EMAIL: 5,
-  MAX_PHOTO_BYTES: 6 * 1024 * 1024,
-  MAX_TEXT_LEN: 8000
-};
+/* ------------------------------------------------------------------ config */
 
+var SPREADSHEET_ID = "1vjHm51yX-PWH2-H-oIcI24Cl-QX14OPfjgF6NVdsqEA";
+var SHEET_NAME = "Applications";
+var PHOTO_FOLDER_ID = "1qK7NDEtN_1TXBIuBvhVClC54bfLJWlvP";
+
+var SHEET_HEADERS = [
+  "Timestamp",
+  "Application ID",
+  "Email",
+  "Full Name",
+  "Contact Number",
+  "Front Office Function",
+  "Back Office Function",
+  "Inspiration",
+  "Skills",
+  "Leadership Experience",
+  "Challenge Handling",
+  "Successful Event",
+  "Strengths",
+  "Weaknesses",
+  "First Preference",
+  "Second Preference",
+  "Professional Photo URL",
+  "Policies Accepted"
+];
+
+var FRONT_OFFICE = ["oGV", "oGT"];
+var BACK_OFFICE = ["BD & Finance", "TM", "Brand MKT", "Product MKT"];
 var ROLES = [
   "OCVP Delegates",
   "OCVP Marketing",
@@ -60,40 +61,58 @@ var ROLES = [
   "OCVP Events & Logistics"
 ];
 
+var CONFIG = {
+  MAX_PHOTO_BYTES: 3 * 1024 * 1024,
+  MAX_TEXT_LEN: 8000,
+  RATE_LIMIT_PER_EMAIL: 5
+};
+
+/* ------------------------------------------------------------------- entry */
+
 function doGet() {
-  return json_({ result: "ok", service: "leacon-ii-application-endpoint" });
+  return json_({
+    success: true,
+    message: "LeaCon II application endpoint is running."
+  });
 }
 
 function doPost(e) {
   try {
     var p = (e && e.parameter) || {};
 
-    // Honeypot + speed check: pretend success, store nothing.
-    if (p.website || isTooFast_(p)) {
+    /* Honeypot: humans never fill this. Reject without alerting the bot. */
+    if (String(p.website || "").trim() !== "") {
       return json_({
-        result: "success",
-        submissionId: p.submissionId || makeId_(),
-        timestamp: new Date().toISOString()
+        success: true,
+        applicationId: makeId_(),
+        message: "Application submitted successfully."
       });
     }
 
     var error = validate_(p);
-    if (error) return json_({ result: "error", message: error });
+    if (error) return json_({ success: false, message: error });
+
+    if (emailExists_(p.email)) {
+      return json_({
+        success: false,
+        message:
+          "An application from this email address already exists. Only one application per email is allowed."
+      });
+    }
 
     if (isRateLimited_(p.email)) {
       return json_({
-        result: "error",
+        success: false,
         message: "Too many submissions from this email. Please try again in a few minutes."
       });
     }
 
-    var photoUrl = storePhoto_(p.photoData, p.photoName);
-
-    var submissionId = p.submissionId || makeId_();
-    var timestamp = new Date().toISOString();
+    var applicationId = makeId_();
+    var photoUrl = storePhoto_(p.photoBase64, p.photoName);
 
     appendRow_([
-      timestamp,
+      new Date().toISOString(),
+      applicationId,
       clean_(p.email, 320),
       clean_(p.fullName, 200),
       clean_(p.contactNumber, 60),
@@ -109,16 +128,22 @@ function doPost(e) {
       clean_(p.firstPreference, 80),
       clean_(p.secondPreference, 80),
       photoUrl,
-      p.policiesAccepted === "Yes" ? "Yes" : "No",
-      submissionId
+      "Yes"
     ]);
 
     bumpRateLimit_(p.email);
 
-    return json_({ result: "success", submissionId: submissionId, timestamp: timestamp });
+    return json_({
+      success: true,
+      applicationId: applicationId,
+      message: "Application submitted successfully."
+    });
   } catch (err) {
     console.error(err);
-    return json_({ result: "error", message: "Server error while saving the application." });
+    return json_({
+      success: false,
+      message: "Server error while saving the application."
+    });
   }
 }
 
@@ -152,12 +177,22 @@ function validate_(p) {
     return "A valid email address is required.";
   }
 
+  if (FRONT_OFFICE.indexOf(String(p.frontOffice).trim()) === -1) {
+    return "Unknown front office function.";
+  }
+
+  if (BACK_OFFICE.indexOf(String(p.backOffice).trim()) === -1) {
+    return "Unknown back office function.";
+  }
+
   if (String(p.firstPreference).trim() === String(p.secondPreference).trim()) {
     return "First and second preference must be different.";
   }
 
-  if (ROLES.indexOf(String(p.firstPreference).trim()) === -1 ||
-      ROLES.indexOf(String(p.secondPreference).trim()) === -1) {
+  if (
+    ROLES.indexOf(String(p.firstPreference).trim()) === -1 ||
+    ROLES.indexOf(String(p.secondPreference).trim()) === -1
+  ) {
     return "Unknown role preference.";
   }
 
@@ -165,26 +200,21 @@ function validate_(p) {
     return "OC policies must be accepted.";
   }
 
-  if (p.accurateConfirmation !== "Yes") {
-    return "Accuracy confirmation is required.";
-  }
-
-  if (!p.photoData || !/^data:image\/(jpeg|png);base64,/.test(p.photoData)) {
+  if (!p.photoBase64 || !/^data:image\/(jpeg|png);base64,/.test(p.photoBase64)) {
     return "A professional photo (JPG or PNG) is required.";
   }
 
-  if (p.photoData.length * 0.75 > CONFIG.MAX_PHOTO_BYTES) {
-    return "Photo is larger than 5 MB.";
+  if (estimatePhotoBytes_(p.photoBase64) > CONFIG.MAX_PHOTO_BYTES) {
+    return "The professional picture must be smaller than 3 MB.";
   }
 
   return null;
 }
 
-function isTooFast_(p) {
-  if (!p.timestamp) return false;
-  var sent = Date.parse(p.timestamp);
-  if (isNaN(sent)) return true;
-  return Date.now() - sent < CONFIG.MIN_FILL_MS;
+function estimatePhotoBytes_(dataUrl) {
+  var comma = String(dataUrl).indexOf(",");
+  if (comma === -1) return 0;
+  return Math.round((String(dataUrl).length - comma - 1) * 0.75);
 }
 
 function isRateLimited_(email) {
@@ -201,19 +231,31 @@ function bumpRateLimit_(email) {
   cache.put(key, String(count + 1), 600); // 10 minute window
 }
 
+/* -------------------------------------------------- one application / email */
+
+function emailExists_(email) {
+  var sheet = getSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return false;
+
+  var values = sheet.getRange(2, 3, lastRow - 1, 1).getValues(); // column C = Email
+  var target = String(email || "").trim().toLowerCase();
+  for (var i = 0; i < values.length; i++) {
+    if (String(values[i][0] || "").trim().toLowerCase() === target) return true;
+  }
+  return false;
+}
+
 /* -------------------------------------------------------------------- photo */
 
-function storePhoto_(photoData, photoName) {
-  if (!CONFIG.PHOTO_FOLDER_ID) {
-    console.warn("PHOTO_FOLDER_ID is not configured — photo was not uploaded.");
-    return "[PHOTO NOT UPLOADED — folder not configured]";
-  }
-
-  var match = /^data:(image\/(?:jpeg|png));base64,(.+)$/.exec(photoData);
-  if (!match) return "[PHOTO UPLOAD FAILED — invalid data]";
+function storePhoto_(photoBase64, photoName) {
+  var match = /^data:(image\/(?:jpeg|png));base64,([\s\S]+)$/.exec(
+    String(photoBase64 || "")
+  );
+  if (!match) return "[PHOTO UPLOAD FAILED - invalid data]";
 
   var mime = match[1];
-  var bytes = Utilities.base64Decode(match[2]);
+  var bytes = Utilities.base64Decode(match[2].replace(/\s/g, ""));
   var ext = mime === "image/png" ? ".png" : ".jpg";
   var safeName = String(photoName || "photo")
     .replace(/[^\w.\-]+/g, "_")
@@ -221,10 +263,10 @@ function storePhoto_(photoData, photoName) {
   if (!/\.(jpg|jpeg|png)$/i.test(safeName)) safeName += ext;
 
   var blob = Utilities.newBlob(bytes, mime, safeName);
-  var folder = DriveApp.getFolderById(CONFIG.PHOTO_FOLDER_ID);
+  var folder = DriveApp.getFolderById(PHOTO_FOLDER_ID);
   var file = folder.createFile(blob);
 
-  // Reviewers need to open the link without requesting access.
+  // The folder stays private; reviewers open the link stored in the Sheet.
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
   return file.getUrl();
@@ -233,13 +275,11 @@ function storePhoto_(photoData, photoName) {
 /* -------------------------------------------------------------------- sheet */
 
 function getSheet_() {
-  var ss = CONFIG.SPREADSHEET_ID
-    ? SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID)
-    : SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName(CONFIG.SHEET_NAME) || ss.insertSheet(CONFIG.SHEET_NAME);
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
 
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(CONFIG.SHEET_HEADERS);
+    sheet.appendRow(SHEET_HEADERS);
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -259,17 +299,14 @@ function appendRow_(values) {
 
 function clean_(value, maxLen) {
   var s = String(value === undefined || value === null ? "" : value);
-  s = s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
+  s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
   return maxLen ? s.slice(0, maxLen) : s.slice(0, CONFIG.MAX_TEXT_LEN);
 }
 
 function makeId_() {
-  var d = new Date();
-  var stamp =
-    String(d.getFullYear()).slice(2) +
-    ("0" + (d.getMonth() + 1)).slice(-2) +
-    ("0" + d.getDate()).slice(-2);
-  return "LC2-" + stamp + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+  var now = new Date();
+  var stamp = Utilities.formatDate(now, Session.getScriptTimeZone(), "yyyyMMdd-HHmmss");
+  return "LEACON-" + stamp;
 }
 
 function json_(obj) {

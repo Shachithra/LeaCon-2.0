@@ -185,7 +185,7 @@
             <p class="app-aside__title">Before you begin</p>
             <ul>
               <li>Read the five role briefs, plus the expectations and policies sections.</li>
-              <li>Have a professional photo ready — JPG or PNG, up to 5&nbsp;MB.</li>
+              <li>Have a professional photo ready — JPG or PNG, up to 3&nbsp;MB.</li>
               <li>Use an email and WhatsApp number you check regularly.</li>
               <li>You can review every answer on the final step before submitting.</li>
             </ul>
@@ -235,7 +235,7 @@
               <a class="btn btn--secondary" href="index.html">Back to home</a>
             </div>
 
-            <form id="oc-application" novalidate>
+            <form id="applicationForm" novalidate>
               <!-- Honeypot: humans never see or fill this -->
               <div class="hp-field" aria-hidden="true">
                 <label for="website">Leave this field empty</label>
@@ -265,15 +265,15 @@
                 </div>
 
                 <div class="field" id="field-full-name">
-                  <label class="field__label" for="full-name">Full name <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <input class="input" type="text" id="full-name" name="fullName" autocomplete="name" required aria-describedby="err-full-name">
+                  <label class="field__label" for="fullName">Full name <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <input class="input" type="text" id="fullName" name="fullName" autocomplete="name" required aria-describedby="err-full-name">
                   <p class="field__error" id="err-full-name"></p>
                 </div>
 
                 <div class="form-row">
                   <div class="field" id="field-contact">
-                    <label class="field__label" for="contact">Contact number (WhatsApp preferred) <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                    <input class="input" type="tel" id="contact" name="contact" autocomplete="tel" inputmode="tel" required aria-describedby="hint-contact err-contact">
+                    <label class="field__label" for="contactNumber">Contact number (WhatsApp preferred) <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                    <input class="input" type="tel" id="contactNumber" name="contactNumber" autocomplete="tel" inputmode="tel" required aria-describedby="hint-contact err-contact">
                     <p class="field__hint" id="hint-contact">Include the country or area code.</p>
                     <p class="field__error" id="err-contact"></p>
                   </div>
@@ -342,44 +342,44 @@
                 </div>
 
                 <div class="field" id="field-q1">
-                  <label class="field__label" for="q1">What inspired you to apply for the Organizing Committee of LeaCon II? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q1" name="inspiration" required aria-describedby="err-q1"></textarea>
+                  <label class="field__label" for="inspiration">What inspired you to apply for the Organizing Committee of LeaCon II? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="inspiration" name="inspiration" required aria-describedby="err-q1"></textarea>
                   <p class="field__error" id="err-q1"></p>
                 </div>
 
                 <div class="field" id="field-q2">
-                  <label class="field__label" for="q2">What skills do you have that you believe will contribute to the success of LeaCon II? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q2" name="skills" required aria-describedby="err-q2"></textarea>
+                  <label class="field__label" for="skills">What skills do you have that you believe will contribute to the success of LeaCon II? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="skills" name="skills" required aria-describedby="err-q2"></textarea>
                   <p class="field__error" id="err-q2"></p>
                 </div>
 
                 <div class="field" id="field-q3">
-                  <label class="field__label" for="q3">Briefly explain one of your previous experiences as a leader. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q3" name="leadershipExperience" required aria-describedby="err-q3"></textarea>
+                  <label class="field__label" for="leadershipExperience">Briefly explain one of your previous experiences as a leader. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="leadershipExperience" name="leadershipExperience" required aria-describedby="err-q3"></textarea>
                   <p class="field__error" id="err-q3"></p>
                 </div>
 
                 <div class="field" id="field-q4">
-                  <label class="field__label" for="q4">How would you handle unexpected challenges and issues that could arise during an event? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q4" name="challengeHandling" required aria-describedby="err-q4"></textarea>
+                  <label class="field__label" for="challengeHandling">How would you handle unexpected challenges and issues that could arise during an event? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="challengeHandling" name="challengeHandling" required aria-describedby="err-q4"></textarea>
                   <p class="field__error" id="err-q4"></p>
                 </div>
 
                 <div class="field" id="field-q5">
-                  <label class="field__label" for="q5">What do you think makes an event successful? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q5" name="successfulEvent" required aria-describedby="err-q5"></textarea>
+                  <label class="field__label" for="successfulEvent">What do you think makes an event successful? <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="successfulEvent" name="successfulEvent" required aria-describedby="err-q5"></textarea>
                   <p class="field__error" id="err-q5"></p>
                 </div>
 
                 <div class="field" id="field-q6">
-                  <label class="field__label" for="q6">Mention three of your greatest strengths. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q6" name="strengths" required aria-describedby="err-q6"></textarea>
+                  <label class="field__label" for="strengths">Mention three of your greatest strengths. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="strengths" name="strengths" required aria-describedby="err-q6"></textarea>
                   <p class="field__error" id="err-q6"></p>
                 </div>
 
                 <div class="field" id="field-q7">
-                  <label class="field__label" for="q7">Mention three of your greatest weaknesses. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
-                  <textarea class="textarea" id="q7" name="weaknesses" required aria-describedby="err-q7"></textarea>
+                  <label class="field__label" for="weaknesses">Mention three of your greatest weaknesses. <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></label>
+                  <textarea class="textarea" id="weaknesses" name="weaknesses" required aria-describedby="err-q7"></textarea>
                   <p class="field__error" id="err-q7"></p>
                 </div>
 
@@ -400,7 +400,7 @@
                   <legend class="field__label">First preferred role <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></legend>
                   <div class="choices">
                     <label class="choice">
-                      <input type="radio" name="firstPreference" value="OCVP Delegates" required>
+                      <input type="radio" id="firstPreference" name="firstPreference" value="OCVP Delegates" required>
                       <span class="choice__mark" aria-hidden="true"></span>
                       <span class="choice__text">OCVP Delegates</span>
                     </label>
@@ -432,7 +432,7 @@
                   <legend class="field__label">Second preference <span class="req" aria-hidden="true">*</span><span class="sr-only"> (required)</span></legend>
                   <div class="choices">
                     <label class="choice">
-                      <input type="radio" name="secondPreference" value="OCVP Delegates" required>
+                      <input type="radio" id="secondPreference" name="secondPreference" value="OCVP Delegates" required>
                       <span class="choice__mark" aria-hidden="true"></span>
                       <span class="choice__text">OCVP Delegates</span>
                     </label>
@@ -473,9 +473,9 @@
 
                   <div class="drop" id="photo-drop">
                     <p class="drop__title">Drop a photo here</p>
-                    <p class="drop__hint" id="hint-photo">JPG or PNG · up to 5 MB · a clear, recent photo of you</p>
+                    <p class="drop__hint" id="hint-photo">JPG or PNG · up to 3 MB · a clear, recent photo of you</p>
                     <button class="btn btn--secondary btn--sm" type="button" data-photo-browse>Choose photo</button>
-                    <input type="file" id="photo-input" name="photo" accept="image/jpeg,image/png,image/jpg" required aria-labelledby="label-photo" aria-describedby="hint-photo err-photo">
+                    <input type="file" id="professionalPhoto" name="professionalPhoto" accept="image/jpeg,image/png,image/jpg" required aria-labelledby="label-photo" aria-describedby="hint-photo err-photo">
                   </div>
 
                   <div class="drop-preview" id="photo-preview" hidden>
@@ -519,26 +519,26 @@
 
                 <div class="field" id="field-check-policies">
                   <label class="check">
-                    <input type="checkbox" id="check-policies" name="policies" required aria-describedby="err-check-policies">
+                    <input type="checkbox" id="policiesAccepted" name="policiesAccepted" required aria-describedby="err-check-policies">
                     <span class="check__box" aria-hidden="true"></span>
                     <span class="check__text">I have read and understood the LeaCon II OC Expectations and Policies. <span class="req" aria-hidden="true">*</span></span>
                   </label>
                   <p class="field__error" id="err-check-policies"></p>
                 </div>
 
-                <div class="form-status" id="form-status" tabindex="-1">
+                <div class="form-status" id="errorMessage" tabindex="-1" aria-live="assertive">
                   <p class="form-status__title">Submission failed</p>
                   <p class="form-status__body"></p>
                 </div>
 
                 <div class="step-actions">
                   <button class="btn btn--secondary btn--noarrow" type="button" data-back>Back</button>
-                  <button class="btn" type="submit" id="btn-submit">Submit application</button>
+                  <button class="btn" type="submit" id="submitApplication">Submit application</button>
                 </div>
               </section>
             </form>
 
-            <div class="success" id="success" hidden>
+            <div class="success" id="successMessage" hidden aria-live="polite">
               <span class="success__rule" aria-hidden="true"></span>
               <h3 class="success__title" tabindex="-1">Application received</h3>
               <p class="measure">

@@ -7,14 +7,15 @@
   "use strict";
 
   /* ------------------------------------------------------------------ *
-   * CONFIG — paste the deployed Apps Script Web App URL between the
-   * quotes below. See README.md ("Google Sheets integration").
+   * CONFIG — the deployed Google Apps Script Web App URL (ends in /exec).
+   * Never use the deployment ID here. See README.md ("Google Sheets
+   * integration").
    * ------------------------------------------------------------------ */
-  var APPS_SCRIPT_ENDPOINT = "";
+  var SCRIPT_URL =
+    "https://script.google.com/a/macros/aiesec.net/s/AKfycbx4RSKlUIKESCpYXfXtAx5TA1KiZfD_ta4xhU7edtFrQ1ehjweDIFZ1ol-3SgIFPeg-/exec";
   var APPLICATIONS_OPEN = true;
 
-  var MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-  var MIN_FILL_MS = 5000;
+  var MAX_PHOTO_BYTES = 3 * 1024 * 1024;
   var SUBMIT_LABEL = "Submit application";
 
   var ROLE_SUMMARIES = {
@@ -38,7 +39,7 @@
     "Review & submit"
   ];
 
-  var form = document.getElementById("oc-application");
+  var form = document.getElementById("applicationForm");
   if (!form) return;
 
   var V = window.LCValidation;
@@ -48,12 +49,12 @@
   var progressName = document.getElementById("progress-name");
   var progressBar = document.getElementById("progress-bar");
   var summary = document.getElementById("error-summary");
-  var statusBox = document.getElementById("form-status");
-  var successBox = document.getElementById("success");
-  var btnSubmit = document.getElementById("btn-submit");
+  var statusBox = document.getElementById("errorMessage");
+  var successBox = document.getElementById("successMessage");
+  var btnSubmit = document.getElementById("submitApplication");
   var reviewBox = document.getElementById("review");
   var photoField = document.getElementById("field-photo");
-  var photoInput = document.getElementById("photo-input");
+  var photoInput = document.getElementById("professionalPhoto");
   var photoDrop = document.getElementById("photo-drop");
   var photoPreview = document.getElementById("photo-preview");
   var photoThumb = document.getElementById("photo-thumb");
@@ -61,7 +62,6 @@
   var photoSize = document.getElementById("photo-size");
   var roleSummary = document.querySelector("[data-role-summary]");
   var header = document.querySelector(".site-header");
-  var loadedAt = Date.now();
 
   var current = 0;
   var photo = null;
@@ -252,7 +252,7 @@
     if (!field || field === photoField) return;
     if (field.classList.contains("has-error")) V.field(field, optsFor(field));
     if (field.id === "field-pref1") updateRoleSummary();
-    if (e.target.id === "check-accurate" || e.target.id === "check-policies") {
+    if (e.target.id === "check-accurate" || e.target.id === "policiesAccepted") {
       updateReviewConsent();
     }
   });
@@ -359,7 +359,7 @@
       return;
     }
     if (file.size > MAX_PHOTO_BYTES) {
-      photoError("That file is larger than 5 MB. Please choose a smaller photo.");
+      photoError("That file is larger than 3 MB. Please choose a smaller photo.");
       return;
     }
     var reader = new FileReader();
@@ -448,7 +448,7 @@
     reviewBox.innerHTML = "";
     var rows = [
       ["Full name", value("fullName") || "—"],
-      ["Contact number", value("contact") || "—"],
+      ["Contact number", value("contactNumber") || "—"],
       ["Email", value("email") || "—"],
       ["Front office function", value("frontOffice") || "—"],
       ["Back office function", value("backOffice") || "—"],
@@ -520,7 +520,7 @@
         : "Not yet confirmed";
     }
     if (p) {
-      p.textContent = document.getElementById("check-policies").checked
+      p.textContent = document.getElementById("policiesAccepted").checked
         ? "Accepted"
         : "Not yet accepted";
     }
@@ -540,53 +540,51 @@
     statusBox.classList.remove("is-visible");
   }
 
-  function makeSubmissionId() {
-    var d = new Date();
-    var stamp =
-      String(d.getFullYear()).slice(2) +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      String(d.getDate()).padStart(2, "0");
-    var rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return "LC2-" + stamp + "-" + rand;
+  function buildData() {
+    var data = new URLSearchParams();
+
+    data.append("fullName", value("fullName"));
+    data.append("email", value("email"));
+    data.append("contactNumber", value("contactNumber"));
+    data.append("frontOffice", value("frontOffice"));
+    data.append("backOffice", value("backOffice"));
+    data.append("inspiration", value("inspiration"));
+    data.append("skills", value("skills"));
+    data.append("leadershipExperience", value("leadershipExperience"));
+    data.append("challengeHandling", value("challengeHandling"));
+    data.append("successfulEvent", value("successfulEvent"));
+    data.append("strengths", value("strengths"));
+    data.append("weaknesses", value("weaknesses"));
+    data.append("firstPreference", value("firstPreference"));
+    data.append("secondPreference", value("secondPreference"));
+    data.append(
+      "policiesAccepted",
+      document.getElementById("policiesAccepted").checked ? "Yes" : "No"
+    );
+    data.append(
+      "accurateConfirmation",
+      document.getElementById("check-accurate").checked ? "Yes" : "No"
+    );
+
+    if (photo) {
+      data.append("photoBase64", photo.dataUrl);
+      data.append("photoName", photo.name);
+      data.append("photoType", photo.type);
+    }
+
+    /* Honeypot — humans never fill this; Apps Script rejects it. */
+    data.append("website", form.elements.website ? form.elements.website.value : "");
+
+    return data;
   }
 
-  function buildPayload(submissionId) {
-    return {
-      timestamp: new Date().toISOString(),
-      submissionId: submissionId,
-      email: value("email"),
-      fullName: value("fullName"),
-      contactNumber: value("contact"),
-      frontOffice: value("frontOffice"),
-      backOffice: value("backOffice"),
-      inspiration: value("inspiration"),
-      skills: value("skills"),
-      leadershipExperience: value("leadershipExperience"),
-      challengeHandling: value("challengeHandling"),
-      successfulEvent: value("successfulEvent"),
-      strengths: value("strengths"),
-      weaknesses: value("weaknesses"),
-      firstPreference: value("firstPreference"),
-      secondPreference: value("secondPreference"),
-      photoData: photo ? photo.dataUrl : "",
-      photoName: photo ? photo.name : "",
-      policiesAccepted: document.getElementById("check-policies").checked ? "Yes" : "No",
-      accurateConfirmation: document.getElementById("check-accurate").checked
-        ? "Yes"
-        : "No",
-      website: form.elements.website ? form.elements.website.value : "",
-      source: "leacon-ii-website"
-    };
-  }
-
-  function showSuccess(submissionId, timestamp) {
+  function showSuccess(applicationId) {
     form.hidden = true;
-    document.getElementById("success-ref").textContent = submissionId;
-    var when = timestamp ? new Date(timestamp) : new Date();
-    document.getElementById("success-time").textContent = when.toLocaleString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short"
-    });
+    document.getElementById("success-ref").textContent = applicationId || "—";
+    document.getElementById("success-time").textContent = new Date().toLocaleString(
+      undefined,
+      { dateStyle: "medium", timeStyle: "short" }
+    );
     successBox.hidden = false;
     var title = successBox.querySelector(".success__title");
     if (title) title.focus({ preventScroll: true });
@@ -603,6 +601,7 @@
     submitting = false;
     btnSubmit.disabled = false;
     btnSubmit.textContent = SUBMIT_LABEL;
+    form.removeAttribute("aria-busy");
   }
 
   form.addEventListener("submit", function (e) {
@@ -616,58 +615,36 @@
       return;
     }
 
-    var submissionId = makeSubmissionId();
-    var payload = buildPayload(submissionId);
-
-    /* Honeypot + speed check: pretend success, never send. */
-    var suspicious =
-      payload.website !== "" || Date.now() - loadedAt < MIN_FILL_MS;
-
-    if (suspicious) {
-      showSuccess(submissionId, payload.timestamp);
-      return;
-    }
-
-    if (!APPS_SCRIPT_ENDPOINT) {
-      console.warn(
-        "[LeaCon II] APPS_SCRIPT_ENDPOINT is not set in js/form.js — see README.md, " +
-          "'Google Sheets integration', to connect the form."
-      );
-      showStatus(
-        "Submission not connected yet",
-        "The application form is not connected to its destination yet. " +
-          "Please try again a little later, or contact the team from the homepage. Your answers are still here."
-      );
-      return;
-    }
+    var data = buildData();
 
     submitting = true;
     btnSubmit.disabled = true;
-    btnSubmit.textContent = "Submitting…";
+    btnSubmit.textContent = "Submitting application…";
+    form.setAttribute("aria-busy", "true");
 
-    var body = new FormData();
-    Object.keys(payload).forEach(function (key) {
-      body.append(key, payload[key]);
-    });
-
-    fetch(APPS_SCRIPT_ENDPOINT, { method: "POST", body: body })
+    fetch(SCRIPT_URL, { method: "POST", body: data })
       .then(function (res) {
-        if (!res.ok) throw new Error("HTTP " + res.status);
+        if (!res.ok) throw new Error("The server returned an error.");
         return res.text();
       })
       .then(function (text) {
-        var data = JSON.parse(text);
-        if (data && data.result === "success") {
-          showSuccess(data.submissionId || submissionId, data.timestamp);
-        } else {
-          throw new Error((data && data.message) || "Unexpected response");
+        var result = JSON.parse(text);
+        if (!result || !result.success) {
+          var serverError = new Error(
+            (result && result.message) || "Application submission failed."
+          );
+          serverError.fromServer = true;
+          throw serverError;
         }
+        showSuccess(result.applicationId);
       })
       .catch(function (err) {
         console.error("[LeaCon II] submission failed:", err);
         showStatus(
           "Submission failed",
-          "Something went wrong while sending your application. Your answers are still here — please try again in a moment."
+          err.fromServer
+            ? err.message
+            : "We couldn't submit your application. Your answers are still here — please try again in a moment."
         );
       })
       .then(function () {

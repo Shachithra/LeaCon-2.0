@@ -38,7 +38,7 @@ qa/         Puppeteer-based QA harness (dev only, not shipped)
 
 | What | Where | Current state |
 |---|---|---|
-| Apps Script endpoint | `js/form.js` → `APPS_SCRIPT_ENDPOINT` | `""` → submit shows an honest "Submission not connected yet" error |
+| Apps Script endpoint | `js/form.js` → `SCRIPT_URL` | preset to the deployed `/exec` Web App URL (never the deployment ID) |
 | Applications open/closed | `js/form.js` → `APPLICATIONS_OPEN` | `true`; set `false` to show the closed-state panel instead of the form |
 | Application deadline | `<!-- CONFIRM: application deadline -->` in `index.html`, `application.html` | "Deadline: to be announced" |
 | OCP / EM contacts | `<!-- CONFIRM: official OCP and Event Manager contacts -->` in `index.html` | placeholder note |
@@ -57,21 +57,44 @@ OCP · OCVP Delegates · OCVP Marketing · OCVP Partnership Development · OCVP 
 
 ## Google Sheets integration
 
-The form posts to a Google Apps Script Web App, which appends a row to a Sheet
-(photos travel as base64 and are stored in Drive).
+The form is connected to a deployed Google Apps Script Web App, which appends a
+row to the **Applications** sheet and stores photos in Google Drive.
 
-1. Create a Google Sheet named **LeaCon II OC Applications**.
-2. **Extensions → Apps Script** → paste `apps-script/Code.gs` as `Code.gs`.
-3. **Project Settings** → tick *Show `appsscript.json` manifest file* → replace it with
-   `apps-script/appsscript.json`.
-4. **Deploy → New deployment → Web app**:
-   - Execute as: **Me**
-   - Who has access: **Anyone**
-5. Copy the `/exec` URL into `js/form.js` → `APPS_SCRIPT_ENDPOINT`.
+- Frontend endpoint — `js/form.js` → `SCRIPT_URL` (the live `/exec` URL)
+- Backend — `apps-script/Code.gs`:
+  - `SPREADSHEET_ID` `1vjHm51yX-PWH2-H-oIcI24Cl-QX14OPfjgF6NVdsqEA`
+  - `SHEET_NAME` `Applications` (exact tab name — the script looks it up by name)
+  - `PHOTO_FOLDER_ID` `1qK7NDEtN_1TXBIuBvhVClC54bfLJWlvP` (private folder)
+  - 18 columns, order fixed: Timestamp · Application ID · Email · Full Name ·
+    Contact Number · Front Office Function · Back Office Function · Inspiration ·
+    Skills · Leadership Experience · Challenge Handling · Successful Event ·
+    Strengths · Weaknesses · First Preference · Second Preference ·
+    Professional Photo URL · Policies Accepted
 
-Server-side hardening already built in (`Code.gs`): honeypot field, minimum fill-time
-check, per-email rate limit, role whitelisting, payload length caps. Never trust the
-frontend — re-validate everything there.
+**Contract** (both sides must stay aligned): the frontend POSTs
+`URLSearchParams` (Apps Script reads `e.parameter` — never send JSON), and the
+script answers `{ success: true, applicationId, message }` or
+`{ success: false, message }`. The Application ID looks like
+`LEACON-20261002-153000` and is shown on the success screen.
+
+**Server-side hardening** (`Code.gs`): required-field validation, first ≠ second
+preference, OC policies accepted, photo type/3 MB checks, honeypot field,
+**one application per email** (duplicate check against the Sheet), per-email
+rate limit, role whitelisting and payload length caps. Never trust the frontend
+— everything is re-validated there.
+
+**Deployment access** (critical for external applicants): the script lives in the
+`aiesec.net` Workspace, so in *Deploy → Manage deployments* keep:
+
+- Execute as: **Me**
+- Who has access: **Anyone**
+
+Then test in an incognito window and on a phone not signed into AIESEC — if an
+applicant ever sees a Google login or "You need access" page, the deployment is
+not truly public and the Workspace admin is restricting Apps Script access.
+
+After any `Code.gs` change: *Deploy → Manage deployments → Edit → New version →
+Deploy* (the `/exec` URL stays the same), then re-test.
 
 To switch the site to "closed", set `APPLICATIONS_OPEN = false` in `js/form.js` —
 visitors then see the closed-state panel instead of the form.
@@ -171,13 +194,14 @@ node test-form.mjs     # end-to-end form: preselect → validation → 5 steps �
 node check-fonts.mjs   # which font families actually resolved
 ```
 
-`test-form.mjs` is expected to end with the honest "endpoint not set" error while
-`APPS_SCRIPT_ENDPOINT` is empty — that is the correct behaviour, not a failure.
+`test-form.mjs` intercepts the request to `script.google.com` and answers it
+with a mocked `{ success: true, applicationId }` response, so the end-to-end run
+never writes a real Sheet row while still verifying the payload contract.
 
 ## Launch checklist
 
 1. Fonts: drop the real `LemonMilk-{Regular,Bold}.woff2/.woff` and `Andyou-Regular.woff2/.woff` files into `assets/fonts/` so visitors without the fonts installed still get them (`local()` only helps on machines where the font is installed). Confirm with `qa/check-fonts.mjs`.
 2. Swap every placeholder photo (same ratios, meaningful `alt`).
 3. Fill all `<!-- CONFIRM -->` items: deadline, contacts, OCP name, social URLs.
-4. Deploy the Apps Script, paste the endpoint, submit one test row.
+4. Confirm the Apps Script deployment is public (Execute as: Me / Anyone), submit one real test row, then delete it from the Sheet.
 5. Run `qa/audit.mjs` + `qa/test-form.mjs` against the deployed URL.
