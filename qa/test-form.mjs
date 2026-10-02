@@ -20,23 +20,48 @@ page.on("pageerror", (e) => console.log("PAGE-EXCEPTION:", e.message));
 
 // Never hit the live Apps Script endpoint: mock the response and inspect the
 // outgoing payload so QA can verify the contract without writing a Sheet row.
+// MOCK=restricted → 401 without CORS headers (like the real Google login wall,
+//                    the browser blocks with "Failed to fetch")
+// MOCK=html       → 401 HTML *with* CORS headers (non-JSON response branch)
 const SCRIPT_URL = "https://script.google.com/a/macros/aiesec.net/s/";
+const MOCK = process.env.MOCK || "success";
 let postedPayload = null;
+const mockReply = (req) => {
+  const html = "<!DOCTYPE html><html><body>Sign in to continue</body></html>";
+  if (MOCK === "restricted") {
+    return req.respond({ status: 401, contentType: "text/html", body: html });
+  }
+  if (MOCK === "html") {
+    return req.respond({
+      status: 401,
+      contentType: "text/html",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: html,
+    });
+  }
+  const body =
+    req.method() === "POST"
+      ? JSON.stringify({
+          success: true,
+          applicationId: "LEACON-TEST-000000-000000",
+          message: "Application submitted successfully.",
+        })
+      : JSON.stringify({ success: true, message: "ok" });
+  return req.respond({
+    status: 200,
+    contentType: "application/json",
+    headers: { "Access-Control-Allow-Origin": "*" },
+    body,
+  });
+};
 await page.setRequestInterception(true);
 page.on("request", (req) => {
   if (req.url().startsWith(SCRIPT_URL)) {
-    postedPayload = Object.fromEntries(new URLSearchParams(req.postData() || ""));
-    console.log("payload-keys:", JSON.stringify(Object.keys(postedPayload).sort()));
-    req.respond({
-      status: 200,
-      contentType: "application/json",
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({
-        success: true,
-        applicationId: "LEACON-TEST-000000-000000",
-        message: "Application submitted successfully.",
-      }),
-    });
+    if (req.method() === "POST") {
+      postedPayload = Object.fromEntries(new URLSearchParams(req.postData() || ""));
+      console.log("payload-keys:", JSON.stringify(Object.keys(postedPayload).sort()));
+    }
+    mockReply(req);
   } else {
     req.continue();
   }
@@ -178,7 +203,7 @@ log("sent-to-endpoint:", JSON.stringify({
   photoType: postedPayload?.photoType,
   photoBase64Bytes: postedPayload?.photoBase64?.length ?? 0,
 }));
-await page.screenshot({ path: OUT + "form-after-submit.png" });
+await page.screenshot({ path: OUT + `form-after-submit${MOCK === "success" ? "" : "-" + MOCK}.png` });
 
 await browser.close();
 

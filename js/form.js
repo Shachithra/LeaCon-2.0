@@ -540,6 +540,50 @@
     statusBox.classList.remove("is-visible");
   }
 
+  /* After a failed POST, tell apart "endpoint unreachable / restricted"
+     from "sending failed": a harmless GET (doGet) probes reachability. */
+  function diagnoseAndShowError(err) {
+    if (err.fromServer || err.restricted) {
+      showStatus("Submission failed", err.message);
+      return Promise.resolve();
+    }
+
+    if (navigator.onLine === false) {
+      showStatus(
+        "Submission failed",
+        "You appear to be offline. Please check your internet connection and try again — your answers are still here."
+      );
+      return Promise.resolve();
+    }
+
+    return fetch(SCRIPT_URL, { method: "GET" })
+      .then(function (res) {
+        return res.text().then(function (text) {
+          try {
+            JSON.parse(text);
+            return true;
+          } catch (parseError) {
+            return false;
+          }
+        });
+      })
+      .catch(function () {
+        return false;
+      })
+      .then(function (reachable) {
+        console.error("[LeaCon II] endpoint probe after failure:", {
+          reachable: reachable,
+          onLine: navigator.onLine
+        });
+        showStatus(
+          "Submission failed",
+          reachable
+            ? "The application service is reachable, but sending your application failed. Your answers are still here — please try again in a moment."
+            : "The application service is temporarily restricted or unavailable. Your answers are still here — please try again a little later, or contact the team from the homepage."
+        );
+      });
+  }
+
   function buildData() {
     var data = new URLSearchParams();
 
@@ -624,28 +668,58 @@
 
     fetch(SCRIPT_URL, { method: "POST", body: data })
       .then(function (res) {
-        if (!res.ok) throw new Error("The server returned an error.");
-        return res.text();
-      })
-      .then(function (text) {
-        var result = JSON.parse(text);
-        if (!result || !result.success) {
-          var serverError = new Error(
-            (result && result.message) || "Application submission failed."
-          );
-          serverError.fromServer = true;
-          throw serverError;
-        }
-        showSuccess(result.applicationId);
+        return res.text().then(function (text) {
+          var result = null;
+          try {
+            result = JSON.parse(text);
+          } catch (parseError) {
+            /* Non-JSON body — handled below. */
+          }
+
+          if (!result) {
+            /* Usually a Google sign-in / "You need access" page because the
+               Apps Script deployment is not public, or an infrastructure
+               error. Log everything needed to debug (blueprint §24). */
+            console.error("[LeaCon II] Endpoint returned a non-JSON response:", {
+              status: res.status,
+              finalUrl: res.url,
+              contentType: res.headers.get("content-type"),
+              bodyPreview: String(text).slice(0, 200)
+            });
+            var restrictedError = new Error(
+              "The application service is temporarily restricted or unavailable. " +
+                "Your answers are still here — please try again a little later, " +
+                "or contact the team from the homepage."
+            );
+            restrictedError.restricted = true;
+            throw restrictedError;
+          }
+
+          if (!result.success) {
+            console.error("[LeaCon II] Endpoint returned:", {
+              status: res.status,
+              finalUrl: res.url,
+              result: result
+            });
+            if (result.result === "success") {
+              console.error(
+                "[LeaCon II] The deployed Code.gs still uses the old response " +
+                  "format — redeploy apps-script/Code.gs as a new version."
+              );
+            }
+            var serverError = new Error(
+              result.message || "Application submission failed."
+            );
+            serverError.fromServer = true;
+            throw serverError;
+          }
+
+          showSuccess(result.applicationId);
+        });
       })
       .catch(function (err) {
         console.error("[LeaCon II] submission failed:", err);
-        showStatus(
-          "Submission failed",
-          err.fromServer
-            ? err.message
-            : "We couldn't submit your application. Your answers are still here — please try again in a moment."
-        );
+        return diagnoseAndShowError(err);
       })
       .then(function () {
         restoreSubmit();
