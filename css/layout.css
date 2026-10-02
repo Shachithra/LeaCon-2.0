@@ -1,0 +1,144 @@
+/* ==========================================================================
+   LeaCon II — Layout primitives
+   ========================================================================== */
+
+.wrap {
+  width: min(100% - (var(--gutter) * 2), var(--content-max));
+  margin-inline: auto;
+}
+
+.wrap--narrow {
+  width: min(100% - (var(--gutter) * 2), 60rem);
+  margin-inline: auto;
+}
+
+main {
+  display: block;
+  overflow: clip;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+  scroll-margin-top: calc(var(--nav-height) + 1rem);
+}
+
+.section--tight {
+  padding-block: clamp(2.5rem, 1.8rem + 3vw, 5rem);
+}
+
+.section--surface {
+  background: var(--color-surface);
+}
+
+.section--indigo {
+  background: var(--color-indigo);
+  color: var(--color-on-indigo);
+}
+
+.section--indigo h1,
+.section--indigo h2,
+.section--indigo h3,
+.section--indigo h4,
+.section--indigo .display,
+.section--indigo .numeral {
+  color: var(--color-on-indigo);
+}
+
+.section--indigo .eyebrow {
+  color: var(--color-teal-on-indigo);
+}
+
+.preapply__panel .eyebrow,
+.mini-cta .eyebrow {
+  color: var(--color-teal-on-indigo);
+}
+
+.section--indigo .muted,
+.section--indigo .text-muted {
+  color: var(--color-on-indigo-muted);
+}
+
+.section--ruled {
+  border-top: 1px solid var(--color-line);
+}
+
+/* Section head: eyebrow + display title + supporting copy ------------------ */
+
+.section-head {
+  display: grid;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.section-head__title {
+  max-width: 22ch;
+}
+
+.section-head__intro {
+  max-width: 56ch;
+  color: var(--color-muted);
+}
+
+.section--indigo .section-head__intro {
+  color: var(--color-on-indigo-muted);
+}
+
+/* Grids ------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+/* Single column by default; layout files claim the 12 tracks where
+   the composition needs them (see .hero__inner at ≥768px). */
+.grid-12 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+}
+
+.flow > * + * {
+  margin-block-start: var(--space-sm);
+}
+
+/* Editorial split (text / image) ------------------------------------------ */
+
+.split {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* Thin rules -------------------------------------------------------------- */
+
+.rule {
+  border: 0;
+  height: 1px;
+  background: var(--color-line);
+  width: 100%;
+}
+
+.rule--accent {
+  height: 2px;
+  background: var(--color-teal);
+}
+
+.rule--indigo {
+  background: var(--color-indigo);
+}
+
+/* Utility spacing --------------------------------------------------------- */
+
+.mt-sm {
+  margin-block-start: var(--space-sm);
+}
+
+.mt-md {
+  margin-block-start: var(--space-md);
+}
+
+.mt-lg {
+  margin-block-start: var(--space-lg);
+}

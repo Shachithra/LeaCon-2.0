@@ -1,0 +1,107 @@
+/* ==========================================================================
+   LeaCon II — Design Tokens
+   ========================================================================== */
+
+:root {
+  /* Brand ------------------------------------------------------------- */
+  --color-indigo: #2e286b;
+  --color-teal: #2097a7;
+  --color-green: #5ba46b;
+  --color-warm-orange: #e79a55;
+
+  /* Supporting --------------------------------------------------------- */
+  --color-bg: #f7f7f4;
+  --color-surface: #efefeb;
+  --color-text: #151515;
+  --color-muted: #5f5f5f;
+  --color-line: #d9d9d4;
+  --color-white: #ffffff;
+  --color-error: #a6321f;
+  --color-error-soft: rgba(166, 50, 31, 0.08);
+
+  --color-indigo-deep: #241f56;
+  --color-indigo-soft: rgba(46, 40, 107, 0.08);
+  --color-teal-soft: rgba(32, 151, 167, 0.1);
+  --color-on-indigo: #f2f1ec;
+  --color-on-indigo-muted: rgba(242, 241, 236, 0.66);
+  --color-line-on-indigo: rgba(242, 241, 236, 0.24);
+
+  /* Accessible text variants of the brand hues (WCAG AA on light surfaces).
+     Brand teal/green stay for graphics, rules and large display type. */
+  --color-teal-ink: #14707d;
+  --color-teal-on-indigo: #7fd6e1;
+  --color-green-ink: #356e45;
+  --color-green-accent: #4a9256;
+  --color-number: #87877f;
+
+  /* Typography --------------------------------------------------------- */
+  --font-display: "Lemon Milk", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --font-accent: "Andyou", "Segoe Print", "Bradley Hand", "Brush Script MT", cursive;
+  --font-body: "Raleway", "Helvetica Neue", Arial, sans-serif;
+
+  --text-xs: clamp(0.68rem, 0.65rem + 0.12vw, 0.75rem);
+  --text-sm: clamp(0.8rem, 0.77rem + 0.14vw, 0.875rem);
+  --text-base: clamp(0.95rem, 0.9rem + 0.22vw, 1.06rem);
+  --text-md: clamp(1.05rem, 0.98rem + 0.32vw, 1.25rem);
+  --text-lg: clamp(1.3rem, 1.15rem + 0.6vw, 1.75rem);
+  --text-xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.75rem);
+  --text-2xl: clamp(2.2rem, 1.6rem + 2.4vw, 4rem);
+  --text-display: clamp(3.4rem, 1rem + 13vw, 10.5rem);
+  --text-display-sm: clamp(2.1rem, 1.1rem + 4.4vw, 4.75rem);
+  --text-numeral: clamp(2.4rem, 1.6rem + 3.2vw, 4.25rem);
+
+  --leading-tight: 1.02;
+  --leading-snug: 1.2;
+  --leading-body: 1.65;
+
+  --track-display: -0.01em;
+  --track-label: 0.22em;
+
+  /* Layout ------------------------------------------------------------- */
+  --content-max: 1380px;
+  --measure: 64ch;
+  --gutter: clamp(1.25rem, 1rem + 2.4vw, 3rem);
+  --nav-height: clamp(4.25rem, 6.5vh, 5.25rem);
+
+  /* Space -------------------------------------------------------------- */
+  --space-xs: clamp(0.5rem, 0.4rem + 0.2vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 0.6rem + 0.4vw, 1.25rem);
+  --space-md: clamp(1.25rem, 1rem + 0.8vw, 2rem);
+  --space-lg: clamp(2rem, 1.4rem + 2vw, 4rem);
+  --space-xl: clamp(4rem, 3rem + 4vw, 8rem);
+  --section-y: clamp(3.5rem, 2.4rem + 4.6vw, 7.5rem);
+
+  /* Shape -------------------------------------------------------------- */
+  --cut: clamp(14px, 1.4vw, 24px);
+  --cut-sm: clamp(9px, 0.9vw, 14px);
+  --cut-corner: polygon(
+    0 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut))
+  );
+  --cut-corner-sm: polygon(
+    0 0,
+    calc(100% - var(--cut-sm)) 0,
+    100% var(--cut-sm),
+    100% 100%,
+    var(--cut-sm) 100%,
+    0 calc(100% - var(--cut-sm))
+  );
+  --cut-tr: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+  --cut-bl: polygon(0 0, 100% 0, 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+
+  /* Motion ------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1);
+  --dur-fast: 0.22s;
+  --dur-base: 0.45s;
+  --dur-slow: 0.8s;
+
+  /* Layers ------------------------------------------------------------- */
+  --z-nav: 100;
+  --z-menu: 200;
+  --z-skip: 300;
+}

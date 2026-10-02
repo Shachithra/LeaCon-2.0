@@ -1,0 +1,14 @@
+{
+  "name": "leacon-ii-qa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "shots": "node qa.mjs index.html,application.html,roles/ocp.html,roles/partnership-development.html,roles/marketing.html,roles/events-logistics.html,roles/delegates.html 390,768,1280",
+    "audit": "node audit.mjs",
+    "form": "node test-form.mjs",
+    "fonts": "node check-fonts.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}

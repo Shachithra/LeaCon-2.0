@@ -1,0 +1,241 @@
+/* ==========================================================================
+   LeaCon II — Animation system
+   Content is visible by default. Motion is layered on only when
+   html.js-anim is present (set by JS) and reduced-motion is not requested.
+   ========================================================================== */
+
+/* Scroll / load reveals ----------------------------------------------------- */
+
+[data-reveal] {
+  transition:
+    opacity var(--dur-slow) var(--ease-out) var(--d, 0s),
+    transform var(--dur-slow) var(--ease-out) var(--d, 0s),
+    clip-path var(--dur-slow) var(--ease-out) var(--d, 0s);
+}
+
+html.js-anim [data-reveal]:not(.is-in) {
+  opacity: 0;
+  transform: translateY(1.6rem);
+}
+
+html.js-anim [data-reveal="fade"]:not(.is-in) {
+  transform: none;
+}
+
+html.js-anim [data-reveal="line"]:not(.is-in) {
+  opacity: 1;
+  transform: scaleX(0);
+}
+
+[data-reveal="line"] {
+  transform-origin: left center;
+}
+
+html.js-anim [data-reveal="clip"]:not(.is-in) {
+  opacity: 1;
+  transform: translateY(0.18em);
+  clip-path: inset(0 0 100% 0);
+}
+
+[data-reveal="clip"] {
+  will-change: clip-path, transform;
+}
+
+html.js-anim [data-reveal="stem"]:not(.is-in) {
+  opacity: 1;
+  transform: scaleY(0);
+}
+
+[data-reveal="stem"] {
+  transform-origin: top center;
+}
+
+.org__line--bus[data-reveal="line"] {
+  transform-origin: center;
+}
+
+/* Figure mask reveal --------------------------------------------------------- */
+
+html.js-anim .figure__frame::after,
+html.js-anim .preapply__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--color-surface);
+  transform: translateY(0);
+  transition: transform 0.9s var(--ease-out) calc(var(--d, 0s) + 0.1s);
+  pointer-events: none;
+}
+
+html.js-anim .figure__frame img,
+html.js-anim .preapply__media img {
+  transform: scale(1.07);
+  transition: transform 1.4s var(--ease-out) calc(var(--d, 0s) + 0.1s);
+}
+
+html.js-anim .is-in .figure__frame::after,
+html.js-anim .figure__frame.is-in::after,
+html.js-anim .preapply__media.is-in::after {
+  transform: translateY(-101%);
+}
+
+html.js-anim .is-in .figure__frame img,
+html.js-anim .figure__frame.is-in img,
+html.js-anim .preapply__media.is-in img {
+  transform: scale(1);
+}
+
+/* Org structure connectors --------------------------------------------------- */
+
+.org__line {
+  background: var(--color-line);
+}
+
+.org__line--stem {
+  width: 2px;
+  height: var(--zone, clamp(1.6rem, 3.5vw, 3rem));
+  margin-inline: auto;
+  transform-origin: top center;
+}
+
+.org__line--bus {
+  display: none;
+}
+
+html.js-anim .org__line--stem:not(.is-in) {
+  transform: scaleY(0);
+}
+
+html.js-anim .org .branch:not(.is-in) {
+  opacity: 0;
+}
+
+@keyframes branch-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.2rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+html.js-anim .org .branch.is-in {
+  animation: branch-in 0.6s var(--ease-out) var(--d, 0s) backwards;
+}
+
+html.js-anim .org__line--bus:not(.is-in) {
+  transform: scaleX(0);
+}
+
+.org__line--bus {
+  transform-origin: center;
+}
+
+/* Step transitions ----------------------------------------------------------- */
+
+@keyframes step-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--step-dir, 1.75rem));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.step--enter {
+  animation: step-enter 0.42s var(--ease-out) both;
+}
+
+/* Success line ---------------------------------------------------------------- */
+
+@keyframes rule-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.success:not([hidden]) .success__rule {
+  transform-origin: left center;
+  animation: rule-grow 0.8s var(--ease-out) 0.15s both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.success:not([hidden]) > * {
+  animation: fade-up 0.55s var(--ease-out) both;
+}
+
+.success:not([hidden]) > *:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.success:not([hidden]) > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.success:not([hidden]) > *:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.success:not([hidden]) > *:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Reduced motion -------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html.js-anim [data-reveal]:not(.is-in),
+  html.js-anim [data-reveal="line"]:not(.is-in),
+  html.js-anim [data-reveal="clip"]:not(.is-in),
+  html.js-anim .org .branch:not(.is-in),
+  html.js-anim .org__line--stem:not(.is-in),
+  html.js-anim .org__line--bus:not(.is-in) {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+
+  html.js-anim .figure__frame::after,
+  html.js-anim .preapply__media::after {
+    display: none;
+  }
+
+  html.js-anim .figure__frame img,
+  html.js-anim .preapply__media img {
+    transform: none;
+    transition: none;
+  }
+
+  .step--enter,
+  .success:not([hidden]) .success__rule,
+  .success:not([hidden]) > * {
+    animation-duration: 0.01ms;
+    animation-delay: 0s;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+  }
+}

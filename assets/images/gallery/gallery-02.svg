@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="hatch" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="120" height="120" fill="none"/>
+      <line x1="0" y1="0" x2="0" y2="120" stroke="#2097A7" stroke-opacity="0.05" stroke-width="7.199999999999999"/>
+    </pattern>
+  </defs>
+  <rect width="1000" height="1000" fill="#EFEFEB"/>
+  <rect width="1000" height="1000" fill="url(#hatch)"/>
+  <path d="M 35 85 L 85 35 L 965 35 L 965 915 L 915 965 L 35 965 Z"
+        fill="none" stroke="#D9D9D4" stroke-width="10"/>
+  <rect x="35" y="35" width="160" height="12" fill="#2097A7"/>
+  <g fill="#2097A7" opacity="0.85">
+    <circle cx="500" cy="436.75" r="23" fill="none" stroke="#2097A7" stroke-width="4"/>
+    <circle cx="500" cy="436.75" r="7"/>
+  </g>
+  <text x="500" y="505.5" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif"
+        font-size="55" font-weight="900" letter-spacing="3" fill="#2E286B">LAST YEAR AT LEACON</text>
+  <text x="500" y="539.6" text-anchor="middle" font-family="Arial,'Helvetica Neue',sans-serif"
+        font-size="17" letter-spacing="5" fill="#5F5F5F">GALLERY 02 — SQUARE — 1:1</text>
+  <text x="500" y="953.8" text-anchor="middle" font-family="Arial,'Helvetica Neue',sans-serif"
+        font-size="28" letter-spacing="6" fill="#5F5F5F">REPLACE WITH EVENT PHOTOGRAPHY</text>
+</svg>

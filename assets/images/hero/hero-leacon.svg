@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="hatch" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="120" height="120" fill="none"/>
+      <line x1="0" y1="0" x2="0" y2="120" stroke="#2E286B" stroke-opacity="0.05" stroke-width="7.199999999999999"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1000" fill="#EFEFEB"/>
+  <rect width="1600" height="1000" fill="url(#hatch)"/>
+  <path d="M 35 85 L 85 35 L 1565 35 L 1565 915 L 1515 965 L 35 965 Z"
+        fill="none" stroke="#D9D9D4" stroke-width="9"/>
+  <rect x="672" y="35" width="256" height="12" fill="#2E286B"/>
+  <g fill="#2E286B" opacity="0.85">
+    <circle cx="800" cy="398.8" r="37" fill="none" stroke="#2E286B" stroke-width="6"/>
+    <circle cx="800" cy="398.8" r="11"/>
+  </g>
+  <text x="800" y="508.8" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif"
+        font-size="88" font-weight="900" letter-spacing="5" fill="#2E286B">LEACON II</text>
+  <text x="800" y="563.36" text-anchor="middle" font-family="Arial,'Helvetica Neue',sans-serif"
+        font-size="26" letter-spacing="7" fill="#5F5F5F">HERO PHOTO — 16:10</text>
+  <text x="800" y="955" text-anchor="middle" font-family="Arial,'Helvetica Neue',sans-serif"
+        font-size="25" letter-spacing="6" fill="#5F5F5F">REPLACE WITH EVENT PHOTOGRAPHY</text>
+</svg>

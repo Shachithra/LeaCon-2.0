@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M4 4h44l12 12v44H16L4 48Z" fill="#2E286B"/>
+  <path d="M48 4l12 12H48Z" fill="#2097A7"/>
+  <text x="32" y="42" text-anchor="middle" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-size="26" font-weight="900" letter-spacing="1" fill="#F7F7F4">L2</text>
+</svg>
