@@ -25,7 +25,9 @@ index.html / application.html / roles/*.html
 css/        reset → tokens → base → layout → components → pages → animations → responsive
             (responsive.css is loaded LAST — all media queries live there, mobile-first,
             breakpoints: 640 / 768 / 900 / 1024 / 1180 / 1280)
-js/         main, navigation, animations, gallery, roles, form, validation
+js/         main, navigation, status, animations, gallery, roles, form, validation
+            site-config.js is a plain config file loaded synchronously in every <head>;
+            status.js applies it to the page (loaded first among the deferred scripts)
 scripts/    gen-placeholders.mjs — regenerates every SVG placeholder image
 apps-script/ Code.gs + appsscript.json — the Google Sheets submission endpoint
 assets/     branding / fonts / icons / images / textures
@@ -38,12 +40,23 @@ qa/         Puppeteer-based QA harness (dev only, not shipped)
 
 | What | Where | Current state |
 |---|---|---|
+| Application status | `js/site-config.js` → `applicationStatus` | `"open"` (`"open"` / `"closed"` / `"upcoming"`) — the **only** switch; hero strips, every Apply button, the application hero and the form all read it |
+| Application deadline | `js/site-config.js` → `applicationDeadline` | `10 October 2026, 11.59 pm` — rendered into every `[data-app-deadline]` slot |
 | Apps Script endpoint | `js/form.js` → `SCRIPT_URL` | preset to the deployed `/exec` Web App URL (never the deployment ID) |
-| Applications open/closed | `js/form.js` → `APPLICATIONS_OPEN` | `true`; set `false` to show the closed-state panel instead of the form |
-| Application deadline | `<!-- CONFIRM: application deadline -->` in `index.html`, `application.html` | "Deadline: to be announced" |
-| OCP / EM contacts | `<!-- CONFIRM: official OCP and Event Manager contacts -->` in `index.html` | placeholder note |
-| OCP profile | `index.html` contact section | `[ OCP name ]` |
+| IGP contact | `index.html` contact section → `<!-- CONFIRM: IGP … -->` | `[ IGP name ]`, `WhatsApp [ number ]`, `[ email ]` |
+| Event Manager contacts ×2 | `index.html` contact section → `<!-- CONFIRM: first/second Event Manager … -->` | `[ Event Manager name ]`, `WhatsApp [ number ]`, `[ email ]` |
 | Social links | footer `nav[aria-label="Footer social"]` on every page | `href="#"` (inert — `js/main.js` blocks the jump) |
+
+**Application status marks** — `js/status.js` fills these on every page; keep the HTML
+defaults in sync with `site-config.js` so the page is correct even without JS:
+
+```
+[data-app-status]        status tag (tag--open / tag--closed / tag--upcoming)
+[data-app-deadline]      deadline slot, optional data-deadline-prefix
+[data-apply-cta]         every Apply button — relabelled + pointed at #closed-state
+[data-app-closed-title]  closed/upcoming panel heading
+[data-app-closed-body]   closed/upcoming panel copy
+```
 
 **Role deep-link preselect** — role pages send candidates to
 `application.html?role=…` with these exact values (they must match the
@@ -96,8 +109,9 @@ not truly public and the Workspace admin is restricting Apps Script access.
 After any `Code.gs` change: *Deploy → Manage deployments → Edit → New version →
 Deploy* (the `/exec` URL stays the same), then re-test.
 
-To switch the site to "closed", set `APPLICATIONS_OPEN = false` in `js/form.js` —
-visitors then see the closed-state panel instead of the form.
+To switch the site to "closed", set `applicationStatus = "closed"` in `js/site-config.js`
+— the hero strips, every Apply button, the application hero and the form itself all
+follow it (visitors then see the closed-state panel instead of the form).
 
 ---
 
@@ -188,11 +202,19 @@ cd qa
 npm install            # once (puppeteer-core only; Chrome is used from the system)
 
 node audit.mjs         # structure + WCAG contrast audit, all 7 pages → expect zero issues
+node probe-ovf.mjs     # horizontal-overflow sweep, 7 pages × 320→1920 → expect "NO OVERFLOWS"
 node qa.mjs index.html,application.html,roles/ocp.html "390,768,1280"   # full-page screenshots → out/
 node qa-el.mjs index.html ".org" 390 org-390     # single-element screenshot
 node test-form.mjs     # end-to-end form: preselect → validation → 5 steps → upload → review → submit
+node test-ocp.mjs      # OCP deep-link preselect + first ≠ second preference guard
+node test-keyboard.mjs # skip link, overlay-menu focus trap (Tab + Shift+Tab + Escape),
+                       # accessible names on every focusable control → expect "KEYBOARD A11Y PASSED"
 node check-fonts.mjs   # which font families actually resolved
 ```
+
+`MOCK=restricted|html node test-form.mjs` exercises the two failure branches (Google
+login wall / non-JSON answer): expect `successShown:false`, the error panel visible and
+the answers left in place.
 
 `test-form.mjs` intercepts the request to `script.google.com` and answers it
 with a mocked `{ success: true, applicationId }` response, so the end-to-end run
@@ -202,6 +224,6 @@ never writes a real Sheet row while still verifying the payload contract.
 
 1. Fonts: drop the real `LemonMilk-{Regular,Bold}.woff2/.woff` and `Andyou-Regular.woff2/.woff` files into `assets/fonts/` so visitors without the fonts installed still get them (`local()` only helps on machines where the font is installed). Confirm with `qa/check-fonts.mjs`.
 2. Swap every placeholder photo (same ratios, meaningful `alt`).
-3. Fill all `<!-- CONFIRM -->` items: deadline, contacts, OCP name, social URLs.
+3. Fill the remaining `<!-- CONFIRM -->` items: IGP contact, both Event Manager contacts, social URLs. (Status and deadline now live in `js/site-config.js`.)
 4. Confirm the Apps Script deployment is public (Execute as: Me / Anyone), submit one real test row, then delete it from the Sheet.
-5. Run `qa/audit.mjs` + `qa/test-form.mjs` against the deployed URL.
+5. Run `qa/audit.mjs` + `qa/test-keyboard.mjs` + `qa/test-form.mjs` against the deployed URL, plus `qa/probe-ovf.mjs` for the responsive sweep (320 → 1920).

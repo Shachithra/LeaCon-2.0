@@ -30,9 +30,15 @@
 
   function focusables() {
     if (!menu) return [];
-    return Array.prototype.slice.call(
-      menu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
-    );
+    return Array.prototype.slice
+      .call(menu.querySelectorAll("a[href], button:not([disabled]), [tabindex]"))
+      .filter(function (el) {
+        return (
+          el.getAttribute("tabindex") !== "-1" &&
+          el.getAttribute("aria-hidden") !== "true" &&
+          !el.disabled
+        );
+      });
   }
 
   function openMenu() {

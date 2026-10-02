@@ -28,7 +28,6 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-muted);
-  white-space: nowrap;
 }
 
 .hero__title {
@@ -345,6 +344,21 @@
   max-width: 52ch;
 }
 
+.preapply__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.preapply__deadline {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-teal-on-indigo);
+}
+
 .preapply__cta {
   display: flex;
   flex-wrap: wrap;
@@ -629,15 +643,16 @@
   align-content: start;
 }
 
-.app-aside__panel {
+.panel {
   display: grid;
   gap: var(--space-sm);
   padding: var(--space-md);
-  background: var(--color-surface);
+  background: var(--color-white);
+  border: 1px solid var(--color-line);
   clip-path: var(--cut-corner);
 }
 
-.app-aside__title {
+.panel__title {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-base);
@@ -645,19 +660,27 @@
   color: var(--color-indigo);
 }
 
-.app-aside ul {
+.panel__deadline {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.panel ul {
   display: grid;
   gap: 0.6rem;
 }
 
-.app-aside li {
+.panel li {
   position: relative;
   padding-left: 1.4rem;
   font-size: var(--text-sm);
   color: var(--color-muted);
 }
 
-.app-aside li::before {
+.panel li::before {
   content: "\2192";
   position: absolute;
   left: 0;

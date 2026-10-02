@@ -5,7 +5,10 @@
   "scripts": {
     "shots": "node qa.mjs index.html,application.html,roles/ocp.html,roles/partnership-development.html,roles/marketing.html,roles/events-logistics.html,roles/delegates.html 390,768,1280",
     "audit": "node audit.mjs",
+    "overflow": "node probe-ovf.mjs",
+    "keyboard": "node test-keyboard.mjs",
     "form": "node test-form.mjs",
+    "roles": "node test-ocp.mjs",
     "fonts": "node check-fonts.mjs"
   },
   "dependencies": {

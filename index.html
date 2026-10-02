@@ -19,6 +19,7 @@
 
   <link rel="icon" href="assets/branding/favicon.svg" type="image/svg+xml">
 
+  <script src="js/site-config.js"></script>
   <script>
     (function () {
       try {
@@ -83,7 +84,7 @@
           <li><a href="application.html">Application</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
-        <a class="btn btn--sm" href="application.html">Apply</a>
+        <a class="btn btn--sm" href="application.html" data-apply-cta>Apply</a>
       </nav>
 
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
@@ -114,7 +115,7 @@
       </ul>
     </nav>
     <div class="menu__foot">
-      <a class="btn" href="application.html">Apply now</a>
+      <a class="btn" href="application.html" data-apply-cta>Apply now</a>
       <span class="accent">Lead. Experience. Build.</span>
     </div>
   </div>
@@ -126,9 +127,8 @@
       <div class="hero__inner wrap grid-12">
 
         <div class="hero__status" data-reveal="fade">
-          <span class="tag tag--open">Applications open</span>
-          <!-- CONFIRM: application deadline -->
-          <span class="hero__deadline">Deadline: to be announced</span>
+          <span class="tag tag--open" data-app-status>Applications open</span>
+          <span class="hero__deadline" data-app-deadline>Deadline: 10 October 2026, 11.59 pm</span>
           <span class="hero__deadline">Leadership Development Seminar</span>
         </div>
 
@@ -157,7 +157,7 @@
 
         <div class="hero__cta" data-reveal data-delay="620">
           <a class="btn" href="#roles">Explore OC roles</a>
-          <a class="btn btn--secondary" href="application.html">Apply now</a>
+          <a class="btn btn--secondary" href="application.html" data-apply-cta>Apply now</a>
         </div>
 
         <div class="hero__rule" data-reveal="line" data-delay="520" aria-hidden="true"></div>
@@ -289,7 +289,7 @@
           <p class="eyebrow" data-reveal>Why join the OC</p>
           <h2 class="display display--section section-head__title" id="why-title" data-reveal data-delay="80">Why build LeaCon II.</h2>
           <p class="section-head__intro" data-reveal data-delay="160">
-            Six reasons this is worth your term — written the way we mean them.
+            Six reasons this term is worth the commitment.
           </p>
         </div>
 
@@ -322,7 +322,7 @@
           <li class="ed-item" data-reveal data-delay="300">
             <span class="ed-item__num" aria-hidden="true">06</span>
             <h3 class="ed-item__title">Leave a measurable impact</h3>
-            <p class="ed-item__body">Leave behind stronger leaders, a proven event and a legacy you can point to with pride.</p>
+            <p class="ed-item__body">Stronger leaders, a proven event and work you can point to with pride.</p>
           </li>
         </ol>
       </div>
@@ -333,7 +333,7 @@
       <div class="wrap">
         <div class="section-head">
           <p class="eyebrow" data-reveal>OC structure</p>
-          <h2 class="display display--section section-head__title" id="structure-title" data-reveal data-delay="80">One team. Four functions. Twelve roles.</h2>
+          <h2 class="display display--section section-head__title" id="structure-title" data-reveal data-delay="80">One team. Four functions. Twelve positions.</h2>
           <p class="section-head__intro" data-reveal data-delay="160">
             The OCP leads the committee end to end. Four OCVP functions deliver the work —
             and every role connects back to the event&rsquo;s success. Select a role to read the full brief.
@@ -676,10 +676,14 @@
           <h2 class="preapply__title" id="preapply-title">Ready to build LeaCon II?</h2>
           <p class="preapply__body">
             Five steps: basic information, experience &amp; motivation, role preferences,
-            a professional photo, and a final review. Read the briefs, then apply with intention.
+            a professional photo, and a final review. Read the role briefs first.
           </p>
+          <div class="preapply__status">
+            <span class="tag tag--open" data-app-status>Applications open</span>
+            <span class="preapply__deadline" data-app-deadline>Deadline: 10 October 2026, 11.59 pm</span>
+          </div>
           <div class="preapply__cta">
-            <a class="btn btn--on-indigo" href="application.html">Start application</a>
+            <a class="btn btn--on-indigo" href="application.html" data-apply-cta>Start application</a>
             <a class="btn btn--on-indigo" href="#policies">Read policies</a>
           </div>
         </div>
@@ -697,30 +701,44 @@
               Questions about roles, deadlines or the process? Reach out before you apply —
               a real person from the team will answer.
             </p>
-            <!-- CONFIRM: official OCP and Event Manager contacts -->
-            <p class="micro muted" data-reveal data-delay="240">Official contacts confirmed before applications close.</p>
           </div>
 
           <div class="contact-list">
+            <!-- CONFIRM: IGP name, WhatsApp number and email -->
             <div class="profile" data-reveal>
-              <span class="profile__mono" aria-hidden="true">OC</span>
+              <span class="profile__mono" aria-hidden="true">IGP</span>
               <div>
-                <p class="profile__role">Organizing Committee President</p>
-                <p class="profile__name">[ OCP name ]</p>
+                <p class="profile__role">IGP</p>
+                <p class="profile__name">[ IGP name ]</p>
                 <p class="profile__links">
-                  <a href="#" aria-label="WhatsApp contact for the OCP">WhatsApp [ number ]</a>
-                  <a href="#" aria-label="Email address of the OCP">[ email ]</a>
+                  <a href="#" aria-label="WhatsApp contact for the IGP">WhatsApp [ number ]</a>
+                  <a href="#" aria-label="Email address of the IGP">[ email ]</a>
                 </p>
               </div>
             </div>
+
+            <!-- CONFIRM: first Event Manager name, WhatsApp number and email -->
             <div class="profile" data-reveal data-delay="80">
-              <span class="profile__mono" aria-hidden="true">EM</span>
+              <span class="profile__mono" aria-hidden="true">EM1</span>
               <div>
                 <p class="profile__role">Event Manager</p>
                 <p class="profile__name">[ Event Manager name ]</p>
                 <p class="profile__links">
-                  <a href="#" aria-label="WhatsApp contact for the Event Manager">WhatsApp [ number ]</a>
-                  <a href="#" aria-label="Email address of the Event Manager">[ email ]</a>
+                  <a href="#" aria-label="WhatsApp contact for the first Event Manager">WhatsApp [ number ]</a>
+                  <a href="#" aria-label="Email address of the first Event Manager">[ email ]</a>
+                </p>
+              </div>
+            </div>
+
+            <!-- CONFIRM: second Event Manager name, WhatsApp number and email -->
+            <div class="profile" data-reveal data-delay="160">
+              <span class="profile__mono" aria-hidden="true">EM2</span>
+              <div>
+                <p class="profile__role">Event Manager</p>
+                <p class="profile__name">[ Event Manager name ]</p>
+                <p class="profile__links">
+                  <a href="#" aria-label="WhatsApp contact for the second Event Manager">WhatsApp [ number ]</a>
+                  <a href="#" aria-label="Email address of the second Event Manager">[ email ]</a>
                 </p>
               </div>
             </div>
@@ -784,6 +802,7 @@
     </div>
   </footer>
 
+  <script src="js/status.js" defer></script>
   <script src="js/navigation.js" defer></script>
   <script src="js/animations.js" defer></script>
   <script src="js/gallery.js" defer></script>

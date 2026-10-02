@@ -16,6 +16,7 @@
 
   <link rel="icon" href="assets/branding/favicon.svg" type="image/svg+xml">
 
+  <script src="js/site-config.js"></script>
   <script>
     (function () {
       try {
@@ -63,7 +64,7 @@
           <li><a href="application.html" aria-current="page">Application</a></li>
           <li><a href="index.html#contact">Contact</a></li>
         </ul>
-        <a class="btn btn--sm" href="#the-form">Apply</a>
+        <a class="btn btn--sm" href="#the-form" data-apply-cta>Apply</a>
       </nav>
 
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
@@ -94,7 +95,7 @@
       </ul>
     </nav>
     <div class="menu__foot">
-      <a class="btn" href="#the-form">Apply now</a>
+      <a class="btn" href="#the-form" data-apply-cta>Apply now</a>
       <span class="accent">Lead. Experience. Build.</span>
     </div>
   </div>
@@ -111,9 +112,8 @@
           Read the briefs, answer honestly, and submit before the deadline.
         </p>
         <div class="page-hero__meta" data-reveal data-delay="200">
-          <span class="tag tag--open">Applications open</span>
-          <!-- CONFIRM: application deadline -->
-          <span class="tag">Deadline: to be announced</span>
+          <span class="tag tag--open" data-app-status>Applications open</span>
+          <span class="tag" data-app-deadline>Deadline: 10 October 2026, 11.59 pm</span>
           <span class="tag tag--teal">5-step form</span>
         </div>
       </div>
@@ -131,46 +131,57 @@
           <li class="process__item">
             <span class="process__num">01</span>
             <span class="process__title">Explore OC roles</span>
-            <span class="process__body">Browse the five role briefs and note your preferences.</span>
+            <span class="process__body">Read the five role briefs and note your first and second choice.</span>
           </li>
           <li class="process__item">
             <span class="process__num">02</span>
-            <span class="process__title">Read expectations &amp; policies</span>
-            <span class="process__body">Understand what OC membership requires of you.</span>
+            <span class="process__title">Understand</span>
+            <span class="process__body">Read the expectations and policies — they apply to every role.</span>
           </li>
           <li class="process__item">
             <span class="process__num">03</span>
-            <span class="process__title">Choose preferences</span>
-            <span class="process__body">Pick a first and second choice among the five OC roles.</span>
+            <span class="process__title">Apply</span>
+            <span class="process__body">Complete the five-step form before the deadline.</span>
           </li>
           <li class="process__item">
             <span class="process__num">04</span>
-            <span class="process__title">Complete application</span>
-            <span class="process__body">Fill all five steps accurately before you submit.</span>
-          </li>
-          <li class="process__item">
-            <span class="process__num">05</span>
-            <span class="process__title">Screening</span>
-            <span class="process__body">Applications are reviewed against the role requirements.</span>
-          </li>
-          <li class="process__item">
-            <span class="process__num">06</span>
             <span class="process__title">Interview</span>
             <span class="process__body">Selected candidates are invited to an interview.</span>
           </li>
           <li class="process__item">
-            <span class="process__num">07</span>
+            <span class="process__num">05</span>
             <span class="process__title">Selection</span>
-            <span class="process__body">Final decisions are shared with all applicants.</span>
+            <span class="process__body">Final decisions are shared with every applicant.</span>
           </li>
         </ol>
+      </div>
+    </section>
 
-        <div class="note note--indigo mt-lg" data-reveal>
-          <strong>Before you submit</strong>
+    <!-- BEFORE YOU BEGIN -->
+    <section class="section section--tight" id="before-you-begin" aria-labelledby="before-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow" data-reveal>Before you begin</p>
+          <h2 class="display display--section section-head__title" id="before-title" data-reveal data-delay="80">Get these ready first.</h2>
+        </div>
+
+        <div class="panel" data-reveal>
+          <p class="panel__title">Three things before you start</p>
+          <ul>
+            <li>Read the five role briefs, plus the expectations and policies sections.</li>
+            <li>Have a professional photo ready — JPG or PNG, up to 3&nbsp;MB.</li>
+            <li>Use an email and WhatsApp number you check regularly.</li>
+          </ul>
           <p class="muted">
-            Read the job descriptions, expectations and policies thoroughly. Complete all
-            application sections accurately. Submit before the deadline. Interview information
-            will be shared with selected candidates.
+            Read the job descriptions and policies thoroughly, and complete every section
+            accurately. You can review all your answers on the final step before submitting.
+          </p>
+          <p>
+            <a class="link" href="index.html#roles">Role briefs</a>
+            &nbsp;·&nbsp;
+            <a class="link" href="index.html#expectations">Expectations</a>
+            &nbsp;·&nbsp;
+            <a class="link" href="index.html#policies">Policies</a>
           </p>
         </div>
       </div>
@@ -180,32 +191,19 @@
     <section class="section" id="the-form" aria-labelledby="form-title">
       <div class="wrap app-layout">
 
-        <aside class="app-aside" aria-label="Application help">
-          <div class="app-aside__panel" data-reveal>
-            <p class="app-aside__title">Before you begin</p>
-            <ul>
-              <li>Read the five role briefs, plus the expectations and policies sections.</li>
-              <li>Have a professional photo ready — JPG or PNG, up to 3&nbsp;MB.</li>
-              <li>Use an email and WhatsApp number you check regularly.</li>
-              <li>You can review every answer on the final step before submitting.</li>
-            </ul>
-            <p>
-              <a class="link" href="index.html#expectations">Expectations</a>
-              &nbsp;·&nbsp;
-              <a class="link" href="index.html#policies">Policies</a>
-            </p>
+        <aside class="app-aside" aria-label="Application status and help">
+          <div class="panel" data-reveal>
+            <p class="panel__title">Application status</p>
+            <p><span class="tag tag--open" data-app-status>Applications open</span></p>
+            <p class="panel__deadline" data-app-deadline>Deadline: 10 October 2026, 11.59 pm</p>
           </div>
 
-          <div class="app-aside__panel" data-reveal data-delay="80">
-            <p class="app-aside__title">After you apply</p>
+          <div class="panel" data-reveal data-delay="80">
+            <p class="panel__title">Need help?</p>
             <ul>
-              <li>Screening — applications reviewed against role requirements.</li>
-              <li>Interview — selected candidates are invited.</li>
-              <li>Selection — final decisions shared with everyone.</li>
+              <li>Comparing roles? <a class="link" href="index.html#roles">Read the five briefs</a>.</li>
+              <li>Question about the process? <a class="link" href="index.html#contact">Talk to the team</a>.</li>
             </ul>
-            <p class="muted" style="font-size: var(--text-sm);">
-              Questions? <a class="link" href="index.html#contact">Talk to the team</a>.
-            </p>
           </div>
         </aside>
 
@@ -214,21 +212,17 @@
             <p class="eyebrow" data-reveal>OC application</p>
             <h2 class="display display--section" id="form-title" data-reveal data-delay="80">One form. Five steps.</h2>
             <p data-reveal data-delay="140">
-              Congratulations on taking the first step to be part of the Organizing Committee of
-              LeaCon II, organized by AIESEC in Saegis for Term 26.27.
+              Basic information, experience and motivation, role preferences, a professional
+              photo, and a final review. Take your time — you can check every answer before
+              you submit.
             </p>
-            <p class="muted" data-reveal data-delay="200">
-              LeaCon II is a Leadership Development Seminar designed to develop impactful leaders
-              through leadership sessions, experiential learning, teamwork and challenging activities.
-            </p>
-            <p class="accent" data-reveal data-delay="260">Good luck with the process.</p>
           </div>
 
           <div class="form-panel">
             <div class="closed-state" id="closed-state" hidden>
               <p class="eyebrow">Status</p>
-              <h3 class="display display--section">Applications are now closed.</h3>
-              <p class="muted">
+              <h3 class="display display--section" data-app-closed-title>Applications are now closed.</h3>
+              <p class="muted" data-app-closed-body>
                 Thank you for your interest in LeaCon II. Applications for Term 26.27 are no longer
                 being accepted — follow AIESEC in Saegis for future opportunities.
               </p>
@@ -567,6 +561,28 @@
       </div>
     </section>
 
+    <!-- AFTER YOU APPLY -->
+    <section class="section section--tight section--surface" id="after-you-apply" aria-labelledby="after-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow" data-reveal>After you apply</p>
+          <h2 class="display display--section section-head__title" id="after-title" data-reveal data-delay="80">What happens next.</h2>
+        </div>
+
+        <div class="panel" data-reveal>
+          <ul>
+            <li>Screening — applications are reviewed against the role requirements.</li>
+            <li>Interview — selected candidates are invited.</li>
+            <li>Selection — final decisions are shared with everyone.</li>
+          </ul>
+          <p class="muted">
+            Interview information is shared only with selected candidates. Questions in the
+            meantime? <a class="link" href="index.html#contact">Talk to the team</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="site-footer on-indigo">
@@ -622,6 +638,7 @@
     </div>
   </footer>
 
+  <script src="js/status.js" defer></script>
   <script src="js/navigation.js" defer></script>
   <script src="js/animations.js" defer></script>
   <script src="js/roles.js" defer></script>

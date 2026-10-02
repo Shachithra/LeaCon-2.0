@@ -6,14 +6,19 @@
 (function () {
   "use strict";
 
-  /* ------------------------------------------------------------------ *
-   * CONFIG — the deployed Google Apps Script Web App URL (ends in /exec).
-   * Never use the deployment ID here. See README.md ("Google Sheets
-   * integration").
-   * ------------------------------------------------------------------ */
+   /* ------------------------------------------------------------------ *
+    * CONFIG
+    * SCRIPT_URL  — the deployed Google Apps Script Web App URL (ends in
+    *               /exec). Never use the deployment ID here. See
+    *               README.md ("Google Sheets integration").
+    * Open/closed — comes from js/site-config.js (window.LC_SITE), the
+    *               single source of truth for the whole site. Flip
+    *               applicationStatus there, not here.
+    * ------------------------------------------------------------------ */
   var SCRIPT_URL =
     "https://script.google.com/a/macros/aiesec.net/s/AKfycbx4RSKlUIKESCpYXfXtAx5TA1KiZfD_ta4xhU7edtFrQ1ehjweDIFZ1ol-3SgIFPeg-/exec";
-  var APPLICATIONS_OPEN = true;
+  var APPLICATIONS_OPEN =
+    !window.LC_SITE || window.LC_SITE.applicationStatus === "open";
 
   var MAX_PHOTO_BYTES = 3 * 1024 * 1024;
   var SUBMIT_LABEL = "Submit application";
@@ -69,6 +74,8 @@
 
   if (!APPLICATIONS_OPEN) {
     form.hidden = true;
+    var intro = document.querySelector(".form-intro");
+    if (intro) intro.hidden = true;
     if (closedState) closedState.hidden = false;
     return;
   }

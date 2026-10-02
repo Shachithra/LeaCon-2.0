@@ -168,7 +168,22 @@
   background: var(--color-green);
 }
 
+.tag--closed::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--color-number);
+}
+
+.tag--upcoming::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--color-teal);
+}
+
 .section--indigo .tag,
+.preapply__panel .tag,
 .org__ocp .tag {
   background: rgba(242, 241, 236, 0.12);
   color: var(--color-on-indigo);

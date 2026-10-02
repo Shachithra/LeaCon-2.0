@@ -2,7 +2,7 @@
 const CHROME = process.env.CHROME_PATH || "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const BASE = new URL("../", import.meta.url).href;
 const PAGES = ["index.html","application.html","roles/ocp.html","roles/partnership-development.html","roles/marketing.html","roles/events-logistics.html","roles/delegates.html"];
-const WIDTHS = [390, 768, 1024, 1280, 1920];
+const WIDTHS = [320, 360, 390, 430, 768, 820, 1024, 1280, 1440, 1920];
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--no-sandbox", "--allow-file-access-from-files"] });
 let bad = 0;
 for (const file of PAGES) {
@@ -13,6 +13,8 @@ for (const file of PAGES) {
     await page.goto(BASE + file, { waitUntil: "networkidle0" });
     const r = await page.evaluate(() => {
       const out = [];
+      const docOver = document.documentElement.scrollWidth - window.innerWidth;
+      if (docOver > 3) out.push({ tag: "DOCUMENT", over: docOver, txt: "(horizontal page scroll)" });
       document.querySelectorAll("h1,h2,h3,p,span,a,li,button").forEach((el) => {
         if (!el.clientWidth) return;
         const cs = getComputedStyle(el);
