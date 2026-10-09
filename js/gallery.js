@@ -14,7 +14,7 @@
   if (reduced || !desktop || !("IntersectionObserver" in window)) return;
 
   var figures = Array.prototype.slice.call(
-    document.querySelectorAll(".gallery-grid .figure, .motion-grid .figure")
+    document.querySelectorAll(".gallery-grid .figure")
   );
   if (!figures.length) return;
 

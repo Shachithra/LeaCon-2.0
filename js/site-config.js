@@ -21,5 +21,5 @@
 
 window.LC_SITE = {
   applicationStatus: "open",
-  applicationDeadline: "10 October 2026, 11.59 pm"
+  applicationDeadline: "15 October 2026, 11.59 pm"
 };

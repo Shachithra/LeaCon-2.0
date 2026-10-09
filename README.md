@@ -41,9 +41,8 @@ qa/         Puppeteer-based QA harness (dev only, not shipped)
 | What | Where | Current state |
 |---|---|---|
 | Application status | `js/site-config.js` → `applicationStatus` | `"open"` (`"open"` / `"closed"` / `"upcoming"`) — the **only** switch; hero strips, every Apply button, the application hero and the form all read it |
-| Application deadline | `js/site-config.js` → `applicationDeadline` | `10 October 2026, 11.59 pm` — rendered into every `[data-app-deadline]` slot |
+| Application deadline | `js/site-config.js` → `applicationDeadline` | `15 October 2026, 11.59 pm` — rendered into every `[data-app-deadline]` slot |
 | Apps Script endpoint | `js/form.js` → `SCRIPT_URL` | preset to the deployed `/exec` Web App URL (never the deployment ID) |
-| IGP contact | `index.html` contact section → `<!-- CONFIRM: IGP … -->` | `[ IGP name ]`, `WhatsApp [ number ]`, `[ email ]` |
 | Event Manager contacts ×2 | `index.html` contact section → `<!-- CONFIRM: first/second Event Manager … -->` | `[ Event Manager name ]`, `WhatsApp [ number ]`, `[ email ]` |
 | Social links | footer `nav[aria-label="Footer social"]` on every page | `href="#"` (inert — `js/main.js` blocks the jump) |
 
@@ -134,10 +133,7 @@ so layouts never shift:
 |---|---|---|
 | Hero figure | `assets/images/hero/hero-leacon.svg` | 16:10 (cropped to 4:5 on mobile) |
 | About ×2 | `assets/images/about/{session,obt}-photo.svg` | 4:3 |
-| Structure band | `assets/images/branding/oc-team.svg` | 16:9 |
-| Motion gallery ×4 | `assets/images/gallery/motion-0{1..4}.svg` | 3:4 · 4:3 · 1:1 · 16:9 |
-| Pre-application band | `assets/images/gallery/preapply.svg` | 12:5 (cropped to 2:1 on mobile) |
-| Last-year gallery ×6 | `assets/images/gallery/gallery-0{1..6}.svg` | 3:4 · 1:1 · 1:1 · 21:9 · 4:5 · 3:2 |
+| Last-year gallery ×4 | `assets/images/gallery/gallery-0{1..4}.svg` | 3:4 · 1:1 · 1:1 · 21:9 |
 
 Regenerate placeholders after a wipe: `node scripts/gen-placeholders.mjs`.
 
@@ -224,6 +220,6 @@ never writes a real Sheet row while still verifying the payload contract.
 
 1. Fonts: drop the real `LemonMilk-{Regular,Bold}.woff2/.woff` and `Andyou-Regular.woff2/.woff` files into `assets/fonts/` so visitors without the fonts installed still get them (`local()` only helps on machines where the font is installed). Confirm with `qa/check-fonts.mjs`.
 2. Swap every placeholder photo (same ratios, meaningful `alt`).
-3. Fill the remaining `<!-- CONFIRM -->` items: IGP contact, both Event Manager contacts, social URLs. (Status and deadline now live in `js/site-config.js`.)
+3. Fill the remaining `<!-- CONFIRM -->` items: both Event Manager contacts, social URLs. (Status and deadline now live in `js/site-config.js`.)
 4. Confirm the Apps Script deployment is public (Execute as: Me / Anyone), submit one real test row, then delete it from the Sheet.
 5. Run `qa/audit.mjs` + `qa/test-keyboard.mjs` + `qa/test-form.mjs` against the deployed URL, plus `qa/probe-ovf.mjs` for the responsive sweep (320 → 1920).

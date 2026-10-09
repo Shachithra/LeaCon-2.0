@@ -53,7 +53,7 @@ var SHEET_HEADERS = [
 ];
 
 var FRONT_OFFICE = ["oGV", "oGT"];
-var BACK_OFFICE = ["BD & Finance", "TM", "Brand MKT", "Product MKT"];
+var BACK_OFFICE = ["BD & Finance", "TM", "Brand MKT", "Product MKT", "N/A"];
 var ROLES = [
   "OCP",
   "OCVP Delegates",
