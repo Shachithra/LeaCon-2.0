@@ -1432,11 +1432,15 @@ a.role-row:hover .role-row__cta::after {
 
 .profile {
   display: grid;
-  grid-template-columns: clamp(7rem, 5rem + 8vw, 11.5rem) minmax(0, 1fr);
+  grid-template-columns: clamp(6rem, 4.5rem + 6vw, 11.5rem) minmax(0, 1fr);
   gap: var(--space-md) var(--space-lg);
   align-items: center;
   padding-block: var(--space-lg);
   border-top: 1px solid var(--color-line);
+}
+
+.profile > div {
+  min-width: 0;
 }
 
 .profile__photo {
@@ -1494,15 +1498,19 @@ a.role-row:hover .role-row__cta::after {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  min-width: 0;
   font-size: var(--text-base);
   color: var(--color-muted);
 }
 
 .profile__links a {
+  align-self: flex-start;
+  max-width: 100%;
   color: var(--color-indigo);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
+  overflow-wrap: anywhere;
 }
 
 /* Footer ------------------------------------------------------------------- */
